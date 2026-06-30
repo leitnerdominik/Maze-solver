@@ -20,11 +20,11 @@ const OPPOSITE_WALL_DIRECTION = Object.freeze({
 function getNeighbourCells(cell, cellGrid, totalCols, totalRows) {
     const neighbours = [];
 
-    for(const offset of WALL_DIRECTIONS) {
+    for (const offset of WALL_DIRECTIONS) {
         const neighbourX = cell.x + offset.dx;
         const neighbourY = cell.y + offset.dy;
 
-        if(neighbourX >= 0 && neighbourX < totalCols && neighbourY >= 0 && neighbourY < totalRows) {
+        if (neighbourX >= 0 && neighbourX < totalCols && neighbourY >= 0 && neighbourY < totalRows) {
             neighbours.push(cellGrid[neighbourX][neighbourY]);
         }
     }
@@ -56,7 +56,7 @@ class Cell {
         this.y = y;
         this.cellWidth = cellWidth;
         this.cellHeight = cellHeight;
-        
+
         this.pos = {
             x: this.x * this.cellWidth,
             y: this.y * this.cellHeight,
@@ -75,11 +75,9 @@ class Cell {
         this.h = 0;
 
         this.cameFrom = null;
-
     }
 
     render() {
-
         push();
         noStroke();
         fill(this.color);
@@ -87,19 +85,19 @@ class Cell {
         pop();
 
         stroke(255);
-        if(this.walls[WALL_DIRECTION.TOP]) {
+        if (this.walls[WALL_DIRECTION.TOP]) {
             line(this.pos.x, this.pos.y, this.pos.x + this.cellWidth, this.pos.y);
         }
 
-        if(this.walls[WALL_DIRECTION.RIGHT]) {
+        if (this.walls[WALL_DIRECTION.RIGHT]) {
             line(this.pos.x + this.cellWidth, this.pos.y, this.pos.x + this.cellWidth, this.pos.y + this.cellHeight);
         }
 
-        if(this.walls[WALL_DIRECTION.BOTTOM]) {
+        if (this.walls[WALL_DIRECTION.BOTTOM]) {
             line(this.pos.x, this.pos.y + this.cellHeight, this.pos.x + this.cellWidth, this.pos.y + this.cellHeight);
         }
 
-        if(this.walls[WALL_DIRECTION.LEFT]) {
+        if (this.walls[WALL_DIRECTION.LEFT]) {
             line(this.pos.x, this.pos.y, this.pos.x, this.pos.y + this.cellHeight);
         }
     }

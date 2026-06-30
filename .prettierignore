@@ -1,0 +1,9 @@
+node_modules/
+coverage/
+dist/
+build/
+libraries/p5.min.js
+LICENSE.md
+docs/
+AGENTS.md
+.agents/

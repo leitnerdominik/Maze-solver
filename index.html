@@ -1,115 +1,136 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-  <script src="libraries/p5.min.js"></script>
-  <script src="src/cell.js"></script>
-  <script src="src/recursiveBacktracking.js"></script>
-  <script src="src/astar.js"></script>
-  <script src="src/sketch.js"></script>
-  <title>Maze solver</title>
-  <style>
-      * {
-        box-sizing: border-box;
-      }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta name="description" content="Interactive maze generator and A* pathfinding visualizer built with p5.js." />
+        <link rel="canonical" href="https://leitnerdominik.github.io/Maze-solver/" />
+        <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+        <meta property="og:title" content="Maze Solver" />
+        <meta
+            property="og:description"
+            content="Generate a maze with recursive backtracking, then watch A* find the final path."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://leitnerdominik.github.io/Maze-solver/" />
+        <meta
+            property="og:image"
+            content="https://leitnerdominik.github.io/Maze-solver/assets/maze-solver-preview.png"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Maze Solver" />
+        <meta name="twitter:description" content="Interactive maze generation and A* pathfinding visualization." />
+        <meta
+            name="twitter:image"
+            content="https://leitnerdominik.github.io/Maze-solver/assets/maze-solver-preview.png"
+        />
+        <script src="libraries/p5.min.js"></script>
+        <script src="src/cell.js"></script>
+        <script src="src/recursiveBacktracking.js"></script>
+        <script src="src/astar.js"></script>
+        <script src="src/sketch.js"></script>
+        <title>Maze Solver - Recursive Backtracking and A* Visualizer</title>
+        <style>
+            * {
+                box-sizing: border-box;
+            }
 
-      body {
-        padding: 0;
-        margin: 0;
-        overflow: hidden;
-        font-family: Arial, sans-serif;
-      }
+            body {
+                padding: 0;
+                margin: 0;
+                overflow: hidden;
+                font-family: Arial, sans-serif;
+            }
 
-      .controls {
-        position: fixed;
-        top: 12px;
-        left: 12px;
-        right: 12px;
-        z-index: 10;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px;
-        max-width: 720px;
-        padding: 8px;
-        color: #f6f8fb;
-        background: rgba(12, 18, 28, 0.82);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-      }
+            .controls {
+                position: fixed;
+                top: 12px;
+                left: 12px;
+                right: 12px;
+                z-index: 10;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 8px;
+                max-width: 720px;
+                padding: 8px;
+                color: #f6f8fb;
+                background: rgba(12, 18, 28, 0.82);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+            }
 
-      .controls button,
-      .controls input {
-        font: inherit;
-      }
+            .controls button,
+            .controls input {
+                font: inherit;
+            }
 
-      .controls button {
-        min-height: 32px;
-        padding: 0 10px;
-        color: #f6f8fb;
-        background: #1c6dd0;
-        border: 0;
-        cursor: pointer;
-      }
+            .controls button {
+                min-height: 32px;
+                padding: 0 10px;
+                color: #f6f8fb;
+                background: #1c6dd0;
+                border: 0;
+                cursor: pointer;
+            }
 
-      .controls button:disabled {
-        cursor: default;
-        opacity: 0.55;
-      }
+            .controls button:disabled {
+                cursor: default;
+                opacity: 0.55;
+            }
 
-      .control-group {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        min-height: 32px;
-        white-space: nowrap;
-      }
+            .control-group {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                min-height: 32px;
+                white-space: nowrap;
+            }
 
-      .control-group input {
-        width: 96px;
-      }
+            .control-group input {
+                width: 96px;
+            }
 
-      .status {
-        min-width: 116px;
-        font-weight: 700;
-      }
+            .status {
+                min-width: 116px;
+                font-weight: 700;
+            }
 
-      @media (max-width: 520px) {
-        .controls {
-          top: 8px;
-          left: 8px;
-          right: 8px;
-          gap: 6px;
-          padding: 6px;
-          font-size: 13px;
-        }
+            @media (max-width: 520px) {
+                .controls {
+                    top: 8px;
+                    left: 8px;
+                    right: 8px;
+                    gap: 6px;
+                    padding: 6px;
+                    font-size: 13px;
+                }
 
-        .controls button {
-          min-height: 30px;
-          padding: 0 8px;
-        }
+                .controls button {
+                    min-height: 30px;
+                    padding: 0 8px;
+                }
 
-        .control-group input {
-          width: 84px;
-        }
-      }
-  </style>
-</head>
-<body>
-  <div class="controls" aria-label="Maze controls">
-    <button id="regenerateButton" type="button">Regenerate</button>
-    <button id="pauseButton" type="button">Pause</button>
-    <label class="control-group" for="speedInput">
-      Speed
-      <input id="speedInput" type="range" min="1" max="12" value="1">
-      <span id="speedValue">1x</span>
-    </label>
-    <label class="control-group" for="gridSizeInput">
-      Grid
-      <input id="gridSizeInput" type="range" min="10" max="60" step="5" value="20">
-      <span id="gridSizeValue">20x20</span>
-    </label>
-    <span class="status" id="statusDisplay" aria-live="polite">Generating</span>
-  </div>
-</body>
+                .control-group input {
+                    width: 84px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="controls" aria-label="Maze controls">
+            <button id="regenerateButton" type="button">Regenerate</button>
+            <button id="pauseButton" type="button">Pause</button>
+            <label class="control-group" for="speedInput">
+                Speed
+                <input id="speedInput" type="range" min="1" max="12" value="1" />
+                <span id="speedValue">1x</span>
+            </label>
+            <label class="control-group" for="gridSizeInput">
+                Grid
+                <input id="gridSizeInput" type="range" min="10" max="60" step="5" value="20" />
+                <span id="gridSizeValue">20x20</span>
+            </label>
+            <span class="status" id="statusDisplay" aria-live="polite">Generating</span>
+        </div>
+    </body>
 </html>
