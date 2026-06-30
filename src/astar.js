@@ -14,16 +14,15 @@ class AStar {
     }
 
     search() {
-        if(this.isSolved) {
+        if (this.isSolved) {
             return true;
         }
 
-        if(this.hasFailed) {
+        if (this.hasFailed) {
             return false;
         }
 
         if (this.openSet.length) {
-
             let closestCellIndex = 0;
 
             for (let i = 0; i < this.openSet.length; i++) {
@@ -46,7 +45,6 @@ class AStar {
             for (const neighbour of this.currentCell.neighbours) {
                 if (!this.closedSet.includes(neighbour)) {
                     if (canMoveBetweenCells(this.currentCell, neighbour)) {
-
                         let betterPath = false;
 
                         const tentativeG = this.currentCell.g + 1;
@@ -79,7 +77,7 @@ class AStar {
     }
 
     calcPath() {
-        if(!this.currentCell) {
+        if (!this.currentCell) {
             return [];
         }
 
@@ -87,7 +85,7 @@ class AStar {
         let tempCell = this.currentCell;
         path.push(tempCell);
 
-        while(tempCell.cameFrom) {
+        while (tempCell.cameFrom) {
             path.push(tempCell.cameFrom);
             tempCell = tempCell.cameFrom;
         }
@@ -97,5 +95,4 @@ class AStar {
     heuristic_cost(start, goal) {
         return Math.abs(start.pos.x - goal.pos.x) + Math.abs(start.pos.y - goal.pos.y);
     }
-
 }

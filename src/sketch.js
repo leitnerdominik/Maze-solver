@@ -30,11 +30,7 @@ let appStatus = APP_STATUS.GENERATING;
 let statusBeforePause = APP_STATUS.GENERATING;
 let stepsPerFrame = 1;
 let controls = {};
-let recursiveBacktracker,
-    astar,
-    startCell,
-    goalCell;
-
+let recursiveBacktracker, astar, startCell, goalCell;
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -53,20 +49,20 @@ function setupControls() {
         statusDisplay: document.getElementById('statusDisplay'),
     };
 
-    if(controls.regenerateButton) {
+    if (controls.regenerateButton) {
         controls.regenerateButton.addEventListener('click', resetMaze);
     }
 
-    if(controls.pauseButton) {
+    if (controls.pauseButton) {
         controls.pauseButton.addEventListener('click', togglePause);
     }
 
-    if(controls.speedInput) {
+    if (controls.speedInput) {
         stepsPerFrame = Number(controls.speedInput.value);
         controls.speedInput.addEventListener('input', updateSpeed);
     }
 
-    if(controls.gridSizeInput) {
+    if (controls.gridSizeInput) {
         controls.gridSizeInput.addEventListener('change', updateGridSize);
     }
 
@@ -80,12 +76,12 @@ function createGrid() {
     const cellHeight = Math.floor(height / rows);
     const nextGrid = [];
 
-    for(let i = 0; i < cols; i++) {
+    for (let i = 0; i < cols; i++) {
         nextGrid[i] = new Array(rows);
     }
 
-    for(let x = 0; x < cols; x++) {
-        for(let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+        for (let y = 0; y < rows; y++) {
             nextGrid[x][y] = new Cell(x, y, cellWidth, cellHeight);
             nextGrid[x][y].color = VISUAL_COLORS.UNVISITED;
         }
@@ -93,8 +89,8 @@ function createGrid() {
 
     grid = nextGrid;
 
-    for(let x = 0; x < cols; x++) {
-        for(let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+        for (let y = 0; y < rows; y++) {
             grid[x][y].setNeighbours(grid, cols, rows);
         }
     }
@@ -120,8 +116,8 @@ function resetMaze() {
 function draw() {
     background(0);
 
-    for(let step = 0; step < stepsPerFrame; step++) {
-        if(!advanceMaze()) {
+    for (let step = 0; step < stepsPerFrame; step++) {
+        if (!advanceMaze()) {
             break;
         }
     }
@@ -130,10 +126,10 @@ function draw() {
 }
 
 function advanceMaze() {
-    if(appStatus === APP_STATUS.GENERATING) {
+    if (appStatus === APP_STATUS.GENERATING) {
         const generationComplete = recursiveBacktracker.update();
-        if(generationComplete) {
-            if(hasPathBetween(startCell, goalCell)) {
+        if (generationComplete) {
+            if (hasPathBetween(startCell, goalCell)) {
                 setAppStatus(APP_STATUS.SOLVING);
             } else {
                 setAppStatus(APP_STATUS.NO_SOLUTION);
@@ -142,14 +138,14 @@ function advanceMaze() {
             }
         }
         return true;
-    } else if(appStatus === APP_STATUS.SOLVING) {
+    } else if (appStatus === APP_STATUS.SOLVING) {
         const solution = astar.search();
 
-        if(solution === true) {
+        if (solution === true) {
             setAppStatus(APP_STATUS.SOLVED);
             noLoop();
             return false;
-        } else if(solution === false) {
+        } else if (solution === false) {
             setAppStatus(APP_STATUS.NO_SOLUTION);
             noLoop();
             return false;
@@ -164,8 +160,8 @@ function advanceMaze() {
 function renderMaze() {
     applyVisualState();
 
-    for(let i = 0; i < cols; i++) {
-        for(let j = 0; j < rows; j++) {
+    for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
             grid[i][j].render();
         }
     }
@@ -179,30 +175,30 @@ function applyVisualState() {
     const openCells = astar ? new Set(astar.openSet) : new Set();
     const closedCells = astar ? new Set(astar.closedSet) : new Set();
 
-    for(let i = 0; i < cols; i++) {
-        for(let j = 0; j < rows; j++) {
+    for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
             const cell = grid[i][j];
             cell.color = cell.visited ? VISUAL_COLORS.VISITED : VISUAL_COLORS.UNVISITED;
 
-            if(visualStatus !== APP_STATUS.GENERATING) {
-                if(closedCells.has(cell)) {
+            if (visualStatus !== APP_STATUS.GENERATING) {
+                if (closedCells.has(cell)) {
                     cell.color = VISUAL_COLORS.ASTAR_CLOSED;
-                } else if(openCells.has(cell)) {
+                } else if (openCells.has(cell)) {
                     cell.color = VISUAL_COLORS.ASTAR_OPEN;
                 }
             }
         }
     }
 
-    if(visualStatus === APP_STATUS.GENERATING && recursiveBacktracker) {
+    if (visualStatus === APP_STATUS.GENERATING && recursiveBacktracker) {
         recursiveBacktracker.current.color = VISUAL_COLORS.CURRENT_GENERATOR;
     }
 
-    if(startCell) {
+    if (startCell) {
         startCell.color = VISUAL_COLORS.START;
     }
 
-    if(goalCell) {
+    if (goalCell) {
         goalCell.color = VISUAL_COLORS.GOAL;
     }
 }
@@ -213,7 +209,7 @@ function drawStartGoalMarkers() {
 }
 
 function drawCellMarker(cell, markerColor) {
-    if(!cell) {
+    if (!cell) {
         return;
     }
 
@@ -226,12 +222,12 @@ function drawCellMarker(cell, markerColor) {
 }
 
 function drawAStarPath() {
-    if(!astar || !astar.currentCell || appStatus === APP_STATUS.GENERATING) {
+    if (!astar || !astar.currentCell || appStatus === APP_STATUS.GENERATING) {
         return;
     }
 
     const path = astar.finalPath.length ? astar.finalPath : astar.calcPath();
-    if(!path.length) {
+    if (!path.length) {
         return;
     }
 
@@ -241,7 +237,7 @@ function drawAStarPath() {
     stroke(VISUAL_COLORS.PATH);
     strokeWeight(pathWidth);
     beginShape();
-    for(const cell of path) {
+    for (const cell of path) {
         vertex(cell.pos.x + cell.cellWidth / 2, cell.pos.y + cell.cellHeight / 2);
     }
     endShape();
@@ -252,15 +248,15 @@ function hasPathBetween(start, goal) {
     const openCells = [start];
     const visitedCells = new Set([start]);
 
-    while(openCells.length) {
+    while (openCells.length) {
         const currentCell = openCells.shift();
 
-        if(currentCell === goal) {
+        if (currentCell === goal) {
             return true;
         }
 
-        for(const neighbour of currentCell.neighbours) {
-            if(!visitedCells.has(neighbour) && canMoveBetweenCells(currentCell, neighbour)) {
+        for (const neighbour of currentCell.neighbours) {
+            if (!visitedCells.has(neighbour) && canMoveBetweenCells(currentCell, neighbour)) {
                 visitedCells.add(neighbour);
                 openCells.push(neighbour);
             }
@@ -271,13 +267,13 @@ function hasPathBetween(start, goal) {
 }
 
 function togglePause() {
-    if(appStatus === APP_STATUS.PAUSED) {
+    if (appStatus === APP_STATUS.PAUSED) {
         setAppStatus(statusBeforePause);
         loop();
         return;
     }
 
-    if(appStatus === APP_STATUS.GENERATING || appStatus === APP_STATUS.SOLVING) {
+    if (appStatus === APP_STATUS.GENERATING || appStatus === APP_STATUS.SOLVING) {
         statusBeforePause = appStatus;
         setAppStatus(APP_STATUS.PAUSED);
         noLoop();
@@ -285,17 +281,17 @@ function togglePause() {
 }
 
 function updateSpeed() {
-    if(controls.speedInput) {
+    if (controls.speedInput) {
         stepsPerFrame = Number(controls.speedInput.value);
     }
 
-    if(controls.speedValue) {
+    if (controls.speedValue) {
         controls.speedValue.textContent = `${stepsPerFrame}x`;
     }
 }
 
 function updateGridSize() {
-    if(controls.gridSizeInput) {
+    if (controls.gridSizeInput) {
         cols = Number(controls.gridSizeInput.value);
         rows = cols;
     }
@@ -305,7 +301,7 @@ function updateGridSize() {
 }
 
 function updateGridSizeLabel() {
-    if(controls.gridSizeValue) {
+    if (controls.gridSizeValue) {
         controls.gridSizeValue.textContent = `${cols}x${rows}`;
     }
 }
@@ -317,13 +313,13 @@ function setAppStatus(status) {
 }
 
 function updateStatusDisplay() {
-    if(controls.statusDisplay) {
+    if (controls.statusDisplay) {
         controls.statusDisplay.textContent = STATUS_LABELS[appStatus];
     }
 }
 
 function updatePauseButton() {
-    if(!controls.pauseButton) {
+    if (!controls.pauseButton) {
         return;
     }
 

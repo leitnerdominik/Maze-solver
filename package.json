@@ -1,0 +1,15 @@
+{
+    "name": "maze-solver",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Static p5.js maze generator and A* visualizer.",
+    "scripts": {
+        "dev": "node scripts/dev-server.js",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "test": "node --test"
+    },
+    "devDependencies": {
+        "prettier": "^3.6.2"
+    }
+}
