@@ -133,7 +133,13 @@ function advanceMaze() {
     if(appStatus === APP_STATUS.GENERATING) {
         const generationComplete = recursiveBacktracker.update();
         if(generationComplete) {
-            setAppStatus(APP_STATUS.SOLVING);
+            if(hasPathBetween(startCell, goalCell)) {
+                setAppStatus(APP_STATUS.SOLVING);
+            } else {
+                setAppStatus(APP_STATUS.NO_SOLUTION);
+                noLoop();
+                return false;
+            }
         }
         return true;
     } else if(appStatus === APP_STATUS.SOLVING) {
@@ -171,7 +177,7 @@ function renderMaze() {
 function applyVisualState() {
     const visualStatus = appStatus === APP_STATUS.PAUSED ? statusBeforePause : appStatus;
     const openCells = astar ? new Set(astar.openSet) : new Set();
-    const closedCells = astar ? new Set(astar.closeSet) : new Set();
+    const closedCells = astar ? new Set(astar.closedSet) : new Set();
 
     for(let i = 0; i < cols; i++) {
         for(let j = 0; j < rows; j++) {
@@ -224,7 +230,7 @@ function drawAStarPath() {
         return;
     }
 
-    const path = astar.calcPath();
+    const path = astar.finalPath.length ? astar.finalPath : astar.calcPath();
     if(!path.length) {
         return;
     }
@@ -240,6 +246,28 @@ function drawAStarPath() {
     }
     endShape();
     pop();
+}
+
+function hasPathBetween(start, goal) {
+    const openCells = [start];
+    const visitedCells = new Set([start]);
+
+    while(openCells.length) {
+        const currentCell = openCells.shift();
+
+        if(currentCell === goal) {
+            return true;
+        }
+
+        for(const neighbour of currentCell.neighbours) {
+            if(!visitedCells.has(neighbour) && canMoveBetweenCells(currentCell, neighbour)) {
+                visitedCells.add(neighbour);
+                openCells.push(neighbour);
+            }
+        }
+    }
+
+    return false;
 }
 
 function togglePause() {

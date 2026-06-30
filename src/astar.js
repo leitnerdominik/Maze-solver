@@ -4,12 +4,24 @@ class AStar {
         this.goal = goal;
 
         this.openSet = [this.start];
-        this.closeSet = [];
+        this.closedSet = [];
+        this.currentCell = null;
+        this.finalPath = [];
+        this.isSolved = false;
+        this.hasFailed = false;
 
         this.start.f = this.start.g + this.heuristic_cost(start, goal);
     }
 
     search() {
+        if(this.isSolved) {
+            return true;
+        }
+
+        if(this.hasFailed) {
+            return false;
+        }
+
         if (this.openSet.length) {
 
             let closestCellIndex = 0;
@@ -23,14 +35,16 @@ class AStar {
             this.currentCell = this.openSet[closestCellIndex];
 
             if (this.currentCell.x === this.goal.x && this.currentCell.y === this.goal.y) {
+                this.finalPath = this.calcPath();
+                this.isSolved = true;
                 return true;
             }
 
             this.openSet.splice(closestCellIndex, 1); // remove current cell
-            this.closeSet.push(this.currentCell);
+            this.closedSet.push(this.currentCell);
 
             for (const neighbour of this.currentCell.neighbours) {
-                if (!this.closeSet.includes(neighbour)) {
+                if (!this.closedSet.includes(neighbour)) {
                     if (canMoveBetweenCells(this.currentCell, neighbour)) {
 
                         let betterPath = false;
@@ -58,6 +72,8 @@ class AStar {
                 }
             }
         } else {
+            this.hasFailed = true;
+            this.finalPath = [];
             return false;
         }
     }
