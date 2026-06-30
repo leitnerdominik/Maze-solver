@@ -23,7 +23,6 @@ class AStar {
             this.currentCell = this.openSet[closestCellIndex];
 
             if (this.currentCell.x === this.goal.x && this.currentCell.y === this.goal.y) {
-                console.log('found!')
                 return true;
             }
 
@@ -34,22 +33,22 @@ class AStar {
                 if (!this.closeSet.includes(neighbour)) {
                     const openNeighbours = this.getCellDirection(this.currentCell, neighbour);
 
-                    if (openNeighbours.isTop && !this.currentCell.walls[0] ||
-                        openNeighbours.isRight && !this.currentCell.walls[1] ||
-                        openNeighbours.isBottom && !this.currentCell.walls[2] ||
-                        openNeighbours.isLeft && !this.currentCell.walls[3]) {
+                    if ((openNeighbours.isTop && !this.currentCell.walls[0]) ||
+                        (openNeighbours.isRight && !this.currentCell.walls[1]) ||
+                        (openNeighbours.isBottom && !this.currentCell.walls[2]) ||
+                        (openNeighbours.isLeft && !this.currentCell.walls[3])) {
 
                         let betterPath = false;
 
-                        const tentativG = this.currentCell.g + 1;
+                        const tentativeG = this.currentCell.g + 1;
                         neighbour.f = neighbour.g + this.heuristic_cost(neighbour, this.goal);
                         if (!this.openSet.includes(neighbour)) {
                             this.openSet.push(neighbour);
-                            neighbour.g = tentativG;
+                            neighbour.g = tentativeG;
                             betterPath = true;
                         } else {
-                            if (tentativG < neighbour.g) {
-                                neighbour.g = tentativG;
+                            if (tentativeG < neighbour.g) {
+                                neighbour.g = tentativeG;
                                 betterPath = true;
                             }
                         }
@@ -64,7 +63,6 @@ class AStar {
                 }
             }
         } else {
-            console.log('No solution!');
             return false;
         }
     }

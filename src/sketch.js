@@ -3,8 +3,6 @@ const rows = 20;
 const grid = [];
 let isMazeCompleted = false;
 
-const margin = 0;
-
 let recursiveBacktracker,
     astar;
 
@@ -16,7 +14,7 @@ function setup() {
     const cellHeight = Math.floor(height / rows);
 
     for(let i = 0; i < cols; i++) {
-        grid[i] = new Array(cols);
+        grid[i] = new Array(rows);
     }
 
     for(let x = 0; x < cols; x++) {
