@@ -25,13 +25,11 @@ class Cell {
 
     render() {
 
-        // if(this.visited) {
-            push();
-            noStroke();
-            fill(this.color);
-            rect(this.pos.x, this.pos.y, this.cellWidth, this.cellHeight);
-            pop();
-        // }
+        push();
+        noStroke();
+        fill(this.color);
+        rect(this.pos.x, this.pos.y, this.cellWidth, this.cellHeight);
+        pop();
 
         stroke(255);
         // top

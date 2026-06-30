@@ -14,6 +14,16 @@ const STATUS_LABELS = Object.freeze({
     [APP_STATUS.NO_SOLUTION]: 'No solution',
     [APP_STATUS.PAUSED]: 'Paused',
 });
+const VISUAL_COLORS = Object.freeze({
+    UNVISITED: '#07111f',
+    VISITED: '#164b67',
+    CURRENT_GENERATOR: '#2bd17e',
+    ASTAR_OPEN: '#f0b429',
+    ASTAR_CLOSED: '#6f52ed',
+    PATH: '#fff7d6',
+    START: '#27c7ff',
+    GOAL: '#ff5d73',
+});
 
 let grid = [];
 let appStatus = APP_STATUS.GENERATING;
@@ -77,6 +87,7 @@ function createGrid() {
     for(let x = 0; x < cols; x++) {
         for(let y = 0; y < rows; y++) {
             nextGrid[x][y] = new Cell(x, y, cellWidth, cellHeight);
+            nextGrid[x][y].color = VISUAL_COLORS.UNVISITED;
         }
     }
 
@@ -101,6 +112,7 @@ function resetMaze() {
     goalCell = maze.goalCell;
     recursiveBacktracker = new RecursiveBacktracker(grid);
     astar = new AStar(startCell, goalCell);
+    statusBeforePause = APP_STATUS.GENERATING;
     setAppStatus(APP_STATUS.GENERATING);
     loop();
 }
@@ -108,17 +120,13 @@ function resetMaze() {
 function draw() {
     background(0);
 
-    for(let i = 0; i < cols; i++) {
-        for(let j = 0; j < rows; j++) {
-            grid[i][j].render();
-        }
-    }
-
     for(let step = 0; step < stepsPerFrame; step++) {
         if(!advanceMaze()) {
             break;
         }
     }
+
+    renderMaze();
 }
 
 function advanceMaze() {
@@ -130,7 +138,6 @@ function advanceMaze() {
         return true;
     } else if(appStatus === APP_STATUS.SOLVING) {
         const solution = astar.search();
-        astar.drawPath();
 
         if(solution === true) {
             setAppStatus(APP_STATUS.SOLVED);
@@ -146,6 +153,79 @@ function advanceMaze() {
     }
 
     return false;
+}
+
+function renderMaze() {
+    applyVisualState();
+
+    for(let i = 0; i < cols; i++) {
+        for(let j = 0; j < rows; j++) {
+            grid[i][j].render();
+        }
+    }
+
+    drawAStarPath();
+    drawStartGoalMarkers();
+}
+
+function applyVisualState() {
+    const visualStatus = appStatus === APP_STATUS.PAUSED ? statusBeforePause : appStatus;
+    const openCells = astar ? new Set(astar.openSet) : new Set();
+    const closedCells = astar ? new Set(astar.closeSet) : new Set();
+
+    for(let i = 0; i < cols; i++) {
+        for(let j = 0; j < rows; j++) {
+            const cell = grid[i][j];
+            cell.color = cell.visited ? VISUAL_COLORS.VISITED : VISUAL_COLORS.UNVISITED;
+
+            if(visualStatus !== APP_STATUS.GENERATING) {
+                if(closedCells.has(cell)) {
+                    cell.color = VISUAL_COLORS.ASTAR_CLOSED;
+                } else if(openCells.has(cell)) {
+                    cell.color = VISUAL_COLORS.ASTAR_OPEN;
+                }
+            }
+        }
+    }
+
+    if(visualStatus === APP_STATUS.GENERATING && recursiveBacktracker) {
+        recursiveBacktracker.current.color = VISUAL_COLORS.CURRENT_GENERATOR;
+    }
+
+    if(startCell) {
+        startCell.color = VISUAL_COLORS.START;
+    }
+
+    if(goalCell) {
+        goalCell.color = VISUAL_COLORS.GOAL;
+    }
+}
+
+function drawStartGoalMarkers() {
+    drawCellMarker(startCell, VISUAL_COLORS.START);
+    drawCellMarker(goalCell, VISUAL_COLORS.GOAL);
+}
+
+function drawCellMarker(cell, markerColor) {
+    if(!cell) {
+        return;
+    }
+
+    const markerSize = Math.max(4, Math.min(cell.cellWidth, cell.cellHeight) * 0.42);
+    push();
+    noStroke();
+    fill(markerColor);
+    ellipse(cell.pos.x + cell.cellWidth / 2, cell.pos.y + cell.cellHeight / 2, markerSize);
+    pop();
+}
+
+function drawAStarPath() {
+    if(!astar || !astar.currentCell || appStatus === APP_STATUS.GENERATING) {
+        return;
+    }
+
+    const pathWidth = Math.max(2, Math.min(startCell.cellWidth, startCell.cellHeight) * 0.28);
+    astar.drawPath(VISUAL_COLORS.PATH, pathWidth);
 }
 
 function togglePause() {
@@ -207,4 +287,9 @@ function updatePauseButton() {
 
     controls.pauseButton.textContent = appStatus === APP_STATUS.PAUSED ? 'Play' : 'Pause';
     controls.pauseButton.disabled = appStatus === APP_STATUS.SOLVED || appStatus === APP_STATUS.NO_SOLUTION;
+}
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+    resetMaze();
 }

@@ -82,6 +82,10 @@ class AStar {
     }
 
     calcPath() {
+        if(!this.currentCell) {
+            return [];
+        }
+
         const path = [];
         let tempCell = this.currentCell;
         path.push(tempCell);
@@ -93,17 +97,20 @@ class AStar {
         return path;
     }
 
-    drawPath() {
+    drawPath(pathColor, pathWidth) {
 
-        let linepath = this.calcPath();
+        const linepath = this.calcPath();
+        if(!linepath.length) {
+            return;
+        }
+
         push();
         noFill();
-        stroke(255);
-        strokeWeight(8);
+        stroke(pathColor);
+        strokeWeight(pathWidth);
         beginShape();
         for(const cell of linepath) {
             vertex(cell.pos.x + cell.cellWidth / 2, cell.pos.y + cell.cellHeight / 2);
-            // cell.color = color(200, 0, 0);
         }
         endShape();
         pop();
