@@ -31,12 +31,7 @@ class AStar {
 
             for (const neighbour of this.currentCell.neighbours) {
                 if (!this.closeSet.includes(neighbour)) {
-                    const openNeighbours = this.getCellDirection(this.currentCell, neighbour);
-
-                    if ((openNeighbours.isTop && !this.currentCell.walls[0]) ||
-                        (openNeighbours.isRight && !this.currentCell.walls[1]) ||
-                        (openNeighbours.isBottom && !this.currentCell.walls[2]) ||
-                        (openNeighbours.isLeft && !this.currentCell.walls[3])) {
+                    if (canMoveBetweenCells(this.currentCell, neighbour)) {
 
                         let betterPath = false;
 
@@ -67,20 +62,6 @@ class AStar {
         }
     }
 
-    getCellDirection(currentCell, nextCell) {
-        const isTop = nextCell.x === currentCell.x && nextCell.y < currentCell.y;
-        const isRight = nextCell.x > currentCell.x && nextCell.y === currentCell.y;
-        const isBottom = nextCell.x === currentCell.x && nextCell.y > currentCell.y;
-        const isLeft = nextCell.x < currentCell.x && nextCell.y === currentCell.y;
-
-        return {
-            isTop: isTop,
-            isRight: isRight,
-            isBottom: isBottom,
-            isLeft: isLeft,
-        };
-    }
-
     calcPath() {
         if(!this.currentCell) {
             return [];
@@ -97,27 +78,8 @@ class AStar {
         return path;
     }
 
-    drawPath(pathColor, pathWidth) {
-
-        const linepath = this.calcPath();
-        if(!linepath.length) {
-            return;
-        }
-
-        push();
-        noFill();
-        stroke(pathColor);
-        strokeWeight(pathWidth);
-        beginShape();
-        for(const cell of linepath) {
-            vertex(cell.pos.x + cell.cellWidth / 2, cell.pos.y + cell.cellHeight / 2);
-        }
-        endShape();
-        pop();
-    }
-
     heuristic_cost(start, goal) {
-        return abs(start.pos.x - goal.pos.x) + abs(start.pos.y - goal.pos.y);
+        return Math.abs(start.pos.x - goal.pos.x) + Math.abs(start.pos.y - goal.pos.y);
     }
 
 }

@@ -1,3 +1,55 @@
+const WALL_DIRECTION = Object.freeze({
+    TOP: 0,
+    RIGHT: 1,
+    BOTTOM: 2,
+    LEFT: 3,
+});
+const WALL_DIRECTIONS = Object.freeze([
+    { direction: WALL_DIRECTION.TOP, dx: 0, dy: -1 },
+    { direction: WALL_DIRECTION.RIGHT, dx: 1, dy: 0 },
+    { direction: WALL_DIRECTION.BOTTOM, dx: 0, dy: 1 },
+    { direction: WALL_DIRECTION.LEFT, dx: -1, dy: 0 },
+]);
+const OPPOSITE_WALL_DIRECTION = Object.freeze({
+    [WALL_DIRECTION.TOP]: WALL_DIRECTION.BOTTOM,
+    [WALL_DIRECTION.RIGHT]: WALL_DIRECTION.LEFT,
+    [WALL_DIRECTION.BOTTOM]: WALL_DIRECTION.TOP,
+    [WALL_DIRECTION.LEFT]: WALL_DIRECTION.RIGHT,
+});
+
+function getNeighbourCells(cell, cellGrid, totalCols, totalRows) {
+    const neighbours = [];
+
+    for(const offset of WALL_DIRECTIONS) {
+        const neighbourX = cell.x + offset.dx;
+        const neighbourY = cell.y + offset.dy;
+
+        if(neighbourX >= 0 && neighbourX < totalCols && neighbourY >= 0 && neighbourY < totalRows) {
+            neighbours.push(cellGrid[neighbourX][neighbourY]);
+        }
+    }
+
+    return neighbours;
+}
+
+function getDirectionBetween(currentCell, nextCell) {
+    const dx = nextCell.x - currentCell.x;
+    const dy = nextCell.y - currentCell.y;
+    const offset = WALL_DIRECTIONS.find((wallDirection) => wallDirection.dx === dx && wallDirection.dy === dy);
+
+    return offset ? offset.direction : null;
+}
+
+function getOppositeDirection(direction) {
+    return OPPOSITE_WALL_DIRECTION[direction];
+}
+
+function canMoveBetweenCells(currentCell, nextCell) {
+    const direction = getDirectionBetween(currentCell, nextCell);
+
+    return direction !== null && !currentCell.walls[direction];
+}
+
 class Cell {
     constructor(x, y, cellWidth, cellHeight) {
         this.x = x;
@@ -5,14 +57,17 @@ class Cell {
         this.cellWidth = cellWidth;
         this.cellHeight = cellHeight;
         
-        this.pos = createVector(this.x * this.cellWidth, this.y * this.cellHeight);
+        this.pos = {
+            x: this.x * this.cellWidth,
+            y: this.y * this.cellHeight,
+        };
 
         this.visited = false;
         this.neighbours = [];
 
-        this.walls = [true, true, true, true]
+        this.walls = [true, true, true, true];
 
-        this.color = color(3, 36, 100);
+        this.color = '#07111f';
 
         //for astar
         this.f = 0;
@@ -32,44 +87,24 @@ class Cell {
         pop();
 
         stroke(255);
-        // top
-        if(this.walls[0]) {
+        if(this.walls[WALL_DIRECTION.TOP]) {
             line(this.pos.x, this.pos.y, this.pos.x + this.cellWidth, this.pos.y);
         }
 
-        // right
-        if(this.walls[1]) {
+        if(this.walls[WALL_DIRECTION.RIGHT]) {
             line(this.pos.x + this.cellWidth, this.pos.y, this.pos.x + this.cellWidth, this.pos.y + this.cellHeight);
         }
 
-        //bottom
-        if(this.walls[2]) {
+        if(this.walls[WALL_DIRECTION.BOTTOM]) {
             line(this.pos.x, this.pos.y + this.cellHeight, this.pos.x + this.cellWidth, this.pos.y + this.cellHeight);
         }
 
-        // left
-        if(this.walls[3]) {
+        if(this.walls[WALL_DIRECTION.LEFT]) {
             line(this.pos.x, this.pos.y, this.pos.x, this.pos.y + this.cellHeight);
         }
     }
 
-    highlightCell() {
-        push();
-        fill(color(3, 98, 3));
-        noStroke();
-        ellipse(this.pos.x + (this.cellWidth / 2), this.pos.y + (this.cellHeight / 2), this.cellHeight / 2);
-        pop();
-    }
-
-    getNeighbours() {
-        const top = this.y - 1 >= 0 ? grid[this.x][this.y-1] : false;
-        const right = this.x + 1 < cols ? grid[this.x+1][this.y] : false;
-        const bottom = this.y + 1 < rows ? grid[this.x][this.y+1] : false;
-        const left = this.x - 1 >= 0 ? grid[this.x-1][this.y] :  false;
-
-        if(top) this.neighbours.push(top);
-        if(right) this.neighbours.push(right);
-        if(bottom) this.neighbours.push(bottom);
-        if(left) this.neighbours.push(left);
+    setNeighbours(cellGrid, totalCols, totalRows) {
+        this.neighbours = getNeighbourCells(this, cellGrid, totalCols, totalRows);
     }
 }

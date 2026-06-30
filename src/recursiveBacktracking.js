@@ -1,7 +1,6 @@
 class RecursiveBacktracker {
     constructor(grid) {
         this.current = grid[0][0];
-        this.current.color = color(40, 40, 40);
         this.current.visited = true;
         this.stack = [];
     }
@@ -9,8 +8,6 @@ class RecursiveBacktracker {
     update() {
 
         const unvisitedNeighbours = [];
-
-        this.current.highlightCell();
 
         // If the current cell has any neighbours which have not been visited 
         for(const neighbour of this.current.neighbours) {
@@ -45,7 +42,6 @@ class RecursiveBacktracker {
             // Make it the current cell
             this.current = nextCell;
         }
-        this.current.color = color(40, 40, 40);
 
         return false;
 
@@ -57,23 +53,11 @@ class RecursiveBacktracker {
     }
 
     removeWalls(currentCell, nextCell) {
-        const isTop = nextCell.x === currentCell.x && nextCell.y < currentCell.y;
-        const isRight = nextCell.x > currentCell.x && nextCell.y === currentCell.y;
-        const isBottom = nextCell.x === currentCell.x && nextCell.y > currentCell.y;
-        const isLeft = nextCell.x < currentCell.x && nextCell.y === currentCell.y;
+        const direction = getDirectionBetween(currentCell, nextCell);
 
-        if(isTop) {
-            currentCell.walls[0] = false;
-            nextCell.walls[2] = false;
-        } else if(isRight) {
-            currentCell.walls[1] = false;
-            nextCell.walls[3] = false;
-        } else if(isBottom) {
-            currentCell.walls[2] = false;
-            nextCell.walls[0] = false;
-        } else if(isLeft) {
-            currentCell.walls[3] = false;
-            nextCell.walls[1] = false;
+        if(direction !== null) {
+            currentCell.walls[direction] = false;
+            nextCell.walls[getOppositeDirection(direction)] = false;
         }
 
     }

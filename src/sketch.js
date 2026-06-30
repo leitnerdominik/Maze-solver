@@ -95,7 +95,7 @@ function createGrid() {
 
     for(let x = 0; x < cols; x++) {
         for(let y = 0; y < rows; y++) {
-            grid[x][y].getNeighbours();
+            grid[x][y].setNeighbours(grid, cols, rows);
         }
     }
 
@@ -224,8 +224,22 @@ function drawAStarPath() {
         return;
     }
 
+    const path = astar.calcPath();
+    if(!path.length) {
+        return;
+    }
+
     const pathWidth = Math.max(2, Math.min(startCell.cellWidth, startCell.cellHeight) * 0.28);
-    astar.drawPath(VISUAL_COLORS.PATH, pathWidth);
+    push();
+    noFill();
+    stroke(VISUAL_COLORS.PATH);
+    strokeWeight(pathWidth);
+    beginShape();
+    for(const cell of path) {
+        vertex(cell.pos.x + cell.cellWidth / 2, cell.pos.y + cell.cellHeight / 2);
+    }
+    endShape();
+    pop();
 }
 
 function togglePause() {
