@@ -10,14 +10,106 @@
   <script src="src/sketch.js"></script>
   <title>Maze solver</title>
   <style>
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         padding: 0;
         margin: 0;
         overflow: hidden;
+        font-family: Arial, sans-serif;
+      }
+
+      .controls {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        z-index: 10;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        max-width: 720px;
+        padding: 8px;
+        color: #f6f8fb;
+        background: rgba(12, 18, 28, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+      }
+
+      .controls button,
+      .controls input {
+        font: inherit;
+      }
+
+      .controls button {
+        min-height: 32px;
+        padding: 0 10px;
+        color: #f6f8fb;
+        background: #1c6dd0;
+        border: 0;
+        cursor: pointer;
+      }
+
+      .controls button:disabled {
+        cursor: default;
+        opacity: 0.55;
+      }
+
+      .control-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 32px;
+        white-space: nowrap;
+      }
+
+      .control-group input {
+        width: 96px;
+      }
+
+      .status {
+        min-width: 116px;
+        font-weight: 700;
+      }
+
+      @media (max-width: 520px) {
+        .controls {
+          top: 8px;
+          left: 8px;
+          right: 8px;
+          gap: 6px;
+          padding: 6px;
+          font-size: 13px;
+        }
+
+        .controls button {
+          min-height: 30px;
+          padding: 0 8px;
+        }
+
+        .control-group input {
+          width: 84px;
+        }
       }
   </style>
 </head>
 <body>
-  
+  <div class="controls" aria-label="Maze controls">
+    <button id="regenerateButton" type="button">Regenerate</button>
+    <button id="pauseButton" type="button">Pause</button>
+    <label class="control-group" for="speedInput">
+      Speed
+      <input id="speedInput" type="range" min="1" max="12" value="1">
+      <span id="speedValue">1x</span>
+    </label>
+    <label class="control-group" for="gridSizeInput">
+      Grid
+      <input id="gridSizeInput" type="range" min="10" max="60" step="5" value="20">
+      <span id="gridSizeValue">20x20</span>
+    </label>
+    <span class="status" id="statusDisplay" aria-live="polite">Generating</span>
+  </div>
 </body>
 </html>
