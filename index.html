@@ -1,5 +1,4 @@
 <!doctype html>
-<!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
@@ -68,19 +67,7 @@
             .controls input {
                 font: inherit;
             }
-            .controls button,
-            .controls input {
-                font: inherit;
-            }
 
-            .controls button {
-                min-height: 32px;
-                padding: 0 10px;
-                color: #f6f8fb;
-                background: #1c6dd0;
-                border: 0;
-                cursor: pointer;
-            }
             .controls button {
                 min-height: 32px;
                 padding: 0 10px;
@@ -94,18 +81,7 @@
                 cursor: default;
                 opacity: 0.55;
             }
-            .controls button:disabled {
-                cursor: default;
-                opacity: 0.55;
-            }
 
-            .control-group {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                min-height: 32px;
-                white-space: nowrap;
-            }
             .control-group {
                 display: flex;
                 align-items: center;
@@ -117,14 +93,7 @@
             .control-group input {
                 width: 96px;
             }
-            .control-group input {
-                width: 96px;
-            }
 
-            .status {
-                min-width: 116px;
-                font-weight: 700;
-            }
             .status {
                 min-width: 116px;
                 font-weight: 700;
@@ -141,34 +110,7 @@
                     min-height: 30px;
                     padding: 0 8px;
                 }
-                .controls button {
-                    min-height: 30px;
-                    padding: 0 8px;
-                }
 
-                .control-group input {
-                    width: 84px;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="controls" aria-label="Maze controls">
-            <button id="regenerateButton" type="button">Regenerate</button>
-            <button id="pauseButton" type="button">Pause</button>
-            <label class="control-group" for="speedInput">
-                Speed
-                <input id="speedInput" type="range" min="1" max="12" value="1" />
-                <span id="speedValue">1x</span>
-            </label>
-            <label class="control-group" for="gridSizeInput">
-                Grid
-                <input id="gridSizeInput" type="range" min="10" max="60" step="5" value="20" />
-                <span id="gridSizeValue">20x20</span>
-            </label>
-            <span class="status" id="statusDisplay" aria-live="polite">Generating</span>
-        </div>
-    </body>
                 .control-group input {
                     width: 84px;
                 }
