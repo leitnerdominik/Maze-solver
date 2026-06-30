@@ -35,8 +35,13 @@
                 box-sizing: border-box;
             }
 
+            :root {
+                --controls-height: 56px;
+            }
+
             body {
                 padding: 0;
+                padding-top: var(--controls-height);
                 margin: 0;
                 overflow: hidden;
                 font-family: Arial, sans-serif;
@@ -44,19 +49,18 @@
 
             .controls {
                 position: fixed;
-                top: 12px;
-                left: 12px;
-                right: 12px;
+                top: 0;
+                left: 0;
+                right: 0;
                 z-index: 10;
                 display: flex;
                 flex-wrap: wrap;
                 align-items: center;
                 gap: 8px;
-                max-width: 720px;
                 padding: 8px;
                 color: #f6f8fb;
-                background: rgba(12, 18, 28, 0.82);
-                border: 1px solid rgba(255, 255, 255, 0.18);
+                background: #0c121c;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.18);
             }
 
             .controls button,
@@ -97,9 +101,6 @@
 
             @media (max-width: 520px) {
                 .controls {
-                    top: 8px;
-                    left: 8px;
-                    right: 8px;
                     gap: 6px;
                     padding: 6px;
                     font-size: 13px;

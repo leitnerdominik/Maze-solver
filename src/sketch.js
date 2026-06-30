@@ -29,12 +29,14 @@ let grid = [];
 let appStatus = APP_STATUS.GENERATING;
 let statusBeforePause = APP_STATUS.GENERATING;
 let stepsPerFrame = 1;
+let controlsHeight = 0;
 let controls = {};
 let recursiveBacktracker, astar, startCell, goalCell;
 
 function setup() {
-    createCanvas(windowWidth, windowHeight);
     setupControls();
+    updateControlsHeight();
+    createCanvas(windowWidth, getCanvasHeight());
     resetMaze();
 }
 
@@ -69,6 +71,19 @@ function setupControls() {
     updateSpeed();
     updateGridSizeLabel();
     updateStatusDisplay();
+}
+
+function updateControlsHeight() {
+    const controlsElement =
+        controls.regenerateButton && controls.regenerateButton.closest
+            ? controls.regenerateButton.closest('.controls')
+            : document.querySelector('.controls');
+    controlsHeight = controlsElement ? Math.ceil(controlsElement.getBoundingClientRect().height) : 0;
+    document.documentElement.style.setProperty('--controls-height', `${controlsHeight}px`);
+}
+
+function getCanvasHeight() {
+    return Math.max(120, windowHeight - controlsHeight);
 }
 
 function createGrid() {
@@ -328,6 +343,7 @@ function updatePauseButton() {
 }
 
 function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
+    updateControlsHeight();
+    resizeCanvas(windowWidth, getCanvasHeight());
     resetMaze();
 }
